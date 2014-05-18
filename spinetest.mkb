@@ -1,0 +1,18 @@
+files
+{
+	[]
+	(src)
+	test.cpp
+}
+
+includepaths
+{
+	src
+}
+
+subprojects
+{
+	iwutil
+    iwgx
+	spine
+}
