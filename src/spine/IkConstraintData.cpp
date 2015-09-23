@@ -29,33 +29,19 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *****************************************************************************/
 
-#include <spine/BoundingBoxAttachment.h>
+#include <spine/IkConstraintData.h>
 #include <spine/extension.h>
 
-void _spBoundingBoxAttachment_dispose (spAttachment* attachment) {
-	spBoundingBoxAttachment* self = SUB_CAST(spBoundingBoxAttachment, attachment);
-
-	_spAttachment_deinit(attachment);
-
-	FREE(self->vertices);
-	FREE(self);
-}
-
-spBoundingBoxAttachment* spBoundingBoxAttachment_create (const char* name) {
-	spBoundingBoxAttachment* self = NEW(spBoundingBoxAttachment);
-	_spAttachment_init(SUPER(self), name, SP_ATTACHMENT_BOUNDING_BOX, _spBoundingBoxAttachment_dispose);
+spIkConstraintData* spIkConstraintData_create (const char* name) {
+	spIkConstraintData* self = NEW(spIkConstraintData);
+	MALLOC_STR(self->name, name);
+	self->bendDirection = 1;
+	self->mix = 1;
 	return self;
 }
 
-void spBoundingBoxAttachment_computeWorldVertices (spBoundingBoxAttachment* self, spBone* bone, float* worldVertices) {
-	int i;
-	float px, py;
-	float* vertices = self->vertices;
-	float x = bone->skeleton->x + bone->worldX, y = bone->skeleton->y + bone->worldY;
-	for (i = 0; i < self->verticesCount; i += 2) {
-		px = vertices[i];
-		py = vertices[i + 1];
-		worldVertices[i] = px * bone->m00 + py * bone->m01 + x;
-		worldVertices[i + 1] = px * bone->m10 + py * bone->m11 + y;
-	}
+void spIkConstraintData_dispose (spIkConstraintData* self) {
+	FREE(self->name);
+	FREE(self->bones);
+	FREE(self);
 }

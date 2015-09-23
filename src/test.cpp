@@ -182,14 +182,14 @@ void draw() {
   CIwTexture *lastTexture = NULL;
   CIwMaterial::AlphaMode lastBlend = CIwMaterial::ALPHA_NONE;
 
-  for (int i = 0; i < skeleton->slotCount; ++i)
+  for (int i = 0; i < skeleton->slotsCount; ++i)
   {
     spSlot* slot = skeleton->slots[i];
     spAttachment* attachment = slot->attachment;
     if (!attachment) continue;
 
     CIwTexture *texture = NULL;
-    CIwMaterial::AlphaMode blend = slot->data->additiveBlending ? CIwMaterial::ALPHA_ADD : CIwMaterial::ALPHA_BLEND;
+    CIwMaterial::AlphaMode blend = slot->data->blendMode==SP_BLEND_MODE_ADDITIVE ? CIwMaterial::ALPHA_ADD : CIwMaterial::ALPHA_BLEND;
     int num_vertices = 0;
     IwGxPrimType primType = IW_GX_QUAD_LIST;
 
@@ -207,7 +207,7 @@ void draw() {
         float worldVertices[8];
         spRegionAttachment* regionAttachment = (spRegionAttachment*)attachment;
         texture = static_cast<CIwTexture*>(((spAtlasRegion*)regionAttachment->rendererObject)->page->rendererObject);
-        spRegionAttachment_computeWorldVertices(regionAttachment, slot->skeleton->x, slot->skeleton->y, slot->bone, worldVertices);
+        spRegionAttachment_computeWorldVertices(regionAttachment, slot->bone, worldVertices);
 
         unsigned char r = (unsigned char)(skeleton->r * slot->r * 255);
         unsigned char g = (unsigned char)(skeleton->g * slot->g * 255);
@@ -238,7 +238,7 @@ void draw() {
         float *worldVertices = new float[mesh->verticesCount];
         texture = static_cast<CIwTexture*>(((spAtlasRegion*)mesh->rendererObject)->page->rendererObject);
 
-        spMeshAttachment_computeWorldVertices(mesh, slot->skeleton->x, slot->skeleton->y, slot, worldVertices);
+        spMeshAttachment_computeWorldVertices(mesh, slot, worldVertices);
 
         unsigned char r = (unsigned char)(skeleton->r * slot->r * 255);
         unsigned char g = (unsigned char)(skeleton->g * slot->g * 255);
@@ -269,7 +269,7 @@ void draw() {
         float *worldVertices = new float[mesh->uvsCount];
         texture = static_cast<CIwTexture*>(((spAtlasRegion*)mesh->rendererObject)->page->rendererObject);
 
-        spSkinnedMeshAttachment_computeWorldVertices(mesh, slot->skeleton->x, slot->skeleton->y, slot, worldVertices);
+        spSkinnedMeshAttachment_computeWorldVertices(mesh, slot, worldVertices);
 
         unsigned char r = (unsigned char)(skeleton->r * slot->r * 255);
         unsigned char g = (unsigned char)(skeleton->g * slot->g * 255);

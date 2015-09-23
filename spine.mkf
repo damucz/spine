@@ -9,12 +9,6 @@ includepaths
 	"include"
 }
 
-options 
-{ 
-	arm-cpu=6
-	arm-fpu=vfp
-	optimise-speed
-}
 
 files
 {

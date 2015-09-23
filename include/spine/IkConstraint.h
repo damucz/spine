@@ -29,33 +29,56 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *****************************************************************************/
 
-#include <spine/BoundingBoxAttachment.h>
-#include <spine/extension.h>
+#ifndef SPINE_IKCONSTRAINT_H_
+#define SPINE_IKCONSTRAINT_H_
 
-void _spBoundingBoxAttachment_dispose (spAttachment* attachment) {
-	spBoundingBoxAttachment* self = SUB_CAST(spBoundingBoxAttachment, attachment);
+#include <spine/IkConstraintData.h>
+#include <spine/Bone.h>
 
-	_spAttachment_deinit(attachment);
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-	FREE(self->vertices);
-	FREE(self);
-}
+struct spSkeleton;
 
-spBoundingBoxAttachment* spBoundingBoxAttachment_create (const char* name) {
-	spBoundingBoxAttachment* self = NEW(spBoundingBoxAttachment);
-	_spAttachment_init(SUPER(self), name, SP_ATTACHMENT_BOUNDING_BOX, _spBoundingBoxAttachment_dispose);
-	return self;
-}
+typedef struct spIkConstraint {
+	spIkConstraintData* const data;
+	
+	int bonesCount;
+	spBone** bones;
+	
+	spBone* target;
+	int bendDirection;
+	float mix;
 
-void spBoundingBoxAttachment_computeWorldVertices (spBoundingBoxAttachment* self, spBone* bone, float* worldVertices) {
-	int i;
-	float px, py;
-	float* vertices = self->vertices;
-	float x = bone->skeleton->x + bone->worldX, y = bone->skeleton->y + bone->worldY;
-	for (i = 0; i < self->verticesCount; i += 2) {
-		px = vertices[i];
-		py = vertices[i + 1];
-		worldVertices[i] = px * bone->m00 + py * bone->m01 + x;
-		worldVertices[i + 1] = px * bone->m10 + py * bone->m11 + y;
+#ifdef __cplusplus
+	spIkConstraint() :
+		data(0),
+		bonesCount(0),
+		bones(0),
+		target(0),
+		bendDirection(0),
+		mix(0) {
 	}
+#endif
+} spIkConstraint;
+
+spIkConstraint* spIkConstraint_create (spIkConstraintData* data, const struct spSkeleton* skeleton);
+void spIkConstraint_dispose (spIkConstraint* self);
+
+void spIkConstraint_apply (spIkConstraint* self);
+
+void spIkConstraint_apply1 (spBone* bone, float targetX, float targetY, float alpha);
+void spIkConstraint_apply2 (spBone* parent, spBone* child, float targetX, float targetY, int bendDirection, float alpha);
+
+#ifdef SPINE_SHORT_NAMES
+typedef spIkConstraint IkConstraint;
+#define IkConstraint_create(...) spIkConstraint_create(__VA_ARGS__)
+#define IkConstraint_dispose(...) spIkConstraint_dispose(__VA_ARGS__)
+#endif
+
+#ifdef __cplusplus
 }
+#endif
+
+#endif /* SPINE_IKCONSTRAINT_H_ */
